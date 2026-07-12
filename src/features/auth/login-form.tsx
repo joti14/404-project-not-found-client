@@ -2,13 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, Eye, EyeOff, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { getApiErrorMessage } from "@/services/api-client";
+import { useAuthStore } from "@/store/auth-store";
 
 import { loginSchema, type LoginFormValues } from "./login-schema";
 import { useLogin } from "./use-login";
@@ -16,6 +18,15 @@ import { useLogin } from "./use-login";
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const login = useLogin();
+  const authStatus = useAuthStore((state) => state.status);
+  const router = useRouter();
+
+  // Covers both "just logged in" and "already logged in, opened /login".
+  useEffect(() => {
+    if (authStatus === "authenticated") {
+      router.replace("/tasks");
+    }
+  }, [authStatus, router]);
 
   const {
     register,
