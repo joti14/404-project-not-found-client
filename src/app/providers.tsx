@@ -17,6 +17,14 @@ export function Providers({ children }: { children: ReactNode }) {
             staleTime: 30 * 1000,
             retry: 1,
             refetchOnWindowFocus: false,
+            // "online" (default) pauses retries whenever the browser's
+            // connectivity detection says offline - which is unreliable -
+            // leaving the UI in an eternal loading state. Let requests
+            // fail for real; our error states handle recovery.
+            networkMode: "always",
+          },
+          mutations: {
+            networkMode: "always",
           },
         },
       }),

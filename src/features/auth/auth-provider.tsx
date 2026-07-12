@@ -1,5 +1,6 @@
 "use client";
 
+import { AxiosError } from "axios";
 import { useEffect, type ReactNode } from "react";
 
 import { authService } from "@/services/auth-service";
@@ -27,11 +28,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((user) => {
         if (!cancelled) setUser(user);
       })
-      .catch(() => {
-        if (!cancelled) {
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        // Only discard tokens when the server actually rejected them
+        // (e.g. 401). On a network failure the tokens may still be
+        // valid - keep them so the next load can restore the session.
+        if (error instanceof AxiosError && error.response) {
           tokenStorage.clear();
-          clearUser();
         }
+        clearUser();
       });
 
     return () => {
