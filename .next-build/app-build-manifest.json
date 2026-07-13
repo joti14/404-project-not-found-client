@@ -3,7 +3,7 @@
     "/_not-found/page": [
       "static/chunks/ff1a16fafef87110.js",
       "static/chunks/7dd66bdf8a7e5707.js",
-      "static/chunks/6f3f1cc2baad18f3.css",
+      "static/chunks/a0bb7aed7870da87.css",
       "static/chunks/3b063c4a90705bfb.js",
       "static/chunks/70d21b435af81afe.js",
       "static/chunks/20ba8cffd2948dcc.js",
@@ -16,11 +16,11 @@
     "/annotate/page": [
       "static/chunks/ff1a16fafef87110.js",
       "static/chunks/7dd66bdf8a7e5707.js",
-      "static/chunks/6f3f1cc2baad18f3.css",
+      "static/chunks/a0bb7aed7870da87.css",
       "static/chunks/3b063c4a90705bfb.js",
       "static/chunks/70d21b435af81afe.js",
       "static/chunks/7d7a284f8e164daa.js",
-      "static/chunks/47af03b357b18a3f.js",
+      "static/chunks/9870e6763d638303.js",
       "static/chunks/f7193f043acdf72b.js",
       "static/chunks/045cde6ced4a74af.js",
       "static/chunks/20ba8cffd2948dcc.js",
@@ -33,7 +33,7 @@
     "/login/page": [
       "static/chunks/ff1a16fafef87110.js",
       "static/chunks/7dd66bdf8a7e5707.js",
-      "static/chunks/6f3f1cc2baad18f3.css",
+      "static/chunks/a0bb7aed7870da87.css",
       "static/chunks/3b063c4a90705bfb.js",
       "static/chunks/70d21b435af81afe.js",
       "static/chunks/14351ad51a00b4e5.js",
@@ -50,7 +50,7 @@
     "/page": [
       "static/chunks/ff1a16fafef87110.js",
       "static/chunks/7dd66bdf8a7e5707.js",
-      "static/chunks/6f3f1cc2baad18f3.css",
+      "static/chunks/a0bb7aed7870da87.css",
       "static/chunks/3b063c4a90705bfb.js",
       "static/chunks/70d21b435af81afe.js",
       "static/chunks/ff1a16fafef87110.js",
@@ -65,7 +65,7 @@
     "/tasks/page": [
       "static/chunks/ff1a16fafef87110.js",
       "static/chunks/7dd66bdf8a7e5707.js",
-      "static/chunks/6f3f1cc2baad18f3.css",
+      "static/chunks/a0bb7aed7870da87.css",
       "static/chunks/3b063c4a90705bfb.js",
       "static/chunks/70d21b435af81afe.js",
       "static/chunks/e88dedbe54cbe287.js",
