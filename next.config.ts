@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  // Keep production builds out of the dev server's .next directory:
+  // `next build` while `next dev` is running otherwise corrupts the
+  // shared cache and the dev server starts returning 500s.
+  distDir: process.env.NODE_ENV === "production" ? ".next-build" : ".next",
 };
 
 export default nextConfig;

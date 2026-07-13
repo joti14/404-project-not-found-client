@@ -74,10 +74,11 @@ export function TaskModal({ open, onOpenChange, task, boardDate }: TaskModalProp
           </DialogDescription>
         </DialogHeader>
 
-        {/* key remounts the form when the target task changes, so RHF
-            defaultValues are re-applied instead of leaking between tasks */}
+        {/* key remounts the form on every open and whenever the target
+            task changes, so RHF defaultValues are re-applied instead of
+            stale input leaking between opens or between tasks */}
         <TaskForm
-          key={task?.id ?? "create"}
+          key={open ? (task?.id ?? "create") : "closed"}
           defaultValues={defaultValues}
           onSubmit={handleSubmit}
           submitLabel={isEdit ? "Save changes" : "Create task"}

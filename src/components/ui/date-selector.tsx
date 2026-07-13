@@ -43,7 +43,7 @@ export function DateSelector({ value, onChange, className }: DateSelectorProps) 
   };
 
   return (
-    <div className={cn("flex items-center gap-1", className)}>
+    <div className={cn("flex flex-wrap items-center gap-1", className)}>
       <Button
         variant="outline"
         size="icon"

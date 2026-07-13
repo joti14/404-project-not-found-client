@@ -99,8 +99,7 @@ export function TaskForm({
           <FieldError errors={[{ message: fieldError("description") }]} />
         </Field>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field data-invalid={!!fieldError("priority")}>
+        <Field data-invalid={!!fieldError("priority")}>
             <FieldLabel>Priority</FieldLabel>
             <Controller
               control={control}
@@ -132,20 +131,19 @@ export function TaskForm({
               )}
             />
             <FieldError errors={[{ message: fieldError("priority") }]} />
-          </Field>
+        </Field>
 
-          <Field data-invalid={!!fieldError("due_date")}>
-            <FieldLabel>Due date</FieldLabel>
-            <Controller
-              control={control}
-              name="due_date"
-              render={({ field }) => (
-                <DateSelector value={field.value} onChange={field.onChange} />
-              )}
-            />
-            <FieldError errors={[{ message: fieldError("due_date") }]} />
-          </Field>
-        </div>
+        <Field data-invalid={!!fieldError("due_date")}>
+          <FieldLabel>Due date</FieldLabel>
+          <Controller
+            control={control}
+            name="due_date"
+            render={({ field }) => (
+              <DateSelector value={field.value} onChange={field.onChange} />
+            )}
+          />
+          <FieldError errors={[{ message: fieldError("due_date") }]} />
+        </Field>
 
         <Field data-invalid={!!fieldError("tags")}>
           <FieldLabel htmlFor="task-tags">

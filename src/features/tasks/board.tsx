@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  closestCorners,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
 import { CircleAlert, Plus, RotateCw } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -10,10 +21,12 @@ import { useDateStore } from "@/store/date-store";
 import type { Task, TaskStatus } from "@/types/task";
 import { formatDisplayDate } from "@/utils/date";
 
-import { Column } from "./column";
+import { DraggableTaskCard } from "./draggable-task-card";
+import { DroppableColumn } from "./droppable-column";
 import { TaskCard } from "./task-card";
 import { TaskModal } from "./task-modal";
 import { useTasks } from "./use-tasks";
+import { useUpdateTaskStatus } from "./use-update-task-status";
 
 const COLUMNS: ReadonlyArray<{
   status: TaskStatus;
@@ -25,22 +38,35 @@ const COLUMNS: ReadonlyArray<{
   { status: "done", title: "Done", accent: "bg-emerald-500" },
 ];
 
+const COLUMN_STATUSES: ReadonlySet<string> = new Set(
+  COLUMNS.map((column) => column.status),
+);
+
 const EMPTY_GROUPS: Record<TaskStatus, Task[]> = {
   todo: [],
   in_progress: [],
   done: [],
 };
 
-/** The Kanban board for the globally selected date. */
+/** The Kanban board for the globally selected date. Owns all task data. */
 export function Board() {
   const selectedDate = useDateStore((state) => state.selectedDate);
   const setSelectedDate = useDateStore((state) => state.setSelectedDate);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const { data: tasks, isPending, isError, refetch, isRefetching } =
     useTasks(selectedDate);
+  const updateStatus = useUpdateTaskStatus();
+
+  // 8px of movement before a drag starts, so plain clicks (edit/delete
+  // buttons, links) on the card never turn into accidental drags.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor),
+  );
 
   const groups = useMemo(() => {
     if (!tasks) return EMPTY_GROUPS;
@@ -63,6 +89,31 @@ export function Board() {
   const openEdit = (task: Task) => {
     setEditingTask(task);
     setModalOpen(true);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveTask((event.active.data.current?.task as Task) ?? null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveTask(null);
+    const task = event.active.data.current?.task as Task | undefined;
+    const target = event.over?.id;
+
+    if (
+      !task ||
+      typeof target !== "string" ||
+      !COLUMN_STATUSES.has(target) ||
+      target === task.status
+    ) {
+      return;
+    }
+
+    updateStatus.mutate({
+      id: task.id,
+      status: target as TaskStatus,
+      dueDate: selectedDate,
+    });
   };
 
   return (
@@ -109,31 +160,53 @@ export function Board() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-3">
-          {COLUMNS.map((column) =>
-            isPending ? (
-              <div
-                key={column.status}
-                className="flex min-h-96 flex-col gap-2 rounded-xl border bg-muted/40 p-3 pt-14"
-                aria-busy="true"
-              >
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={() => setActiveTask(null)}
+        >
+          <div className="grid gap-4 md:grid-cols-3">
+            {COLUMNS.map((column) =>
+              isPending ? (
+                <div
+                  key={column.status}
+                  className="flex min-h-96 flex-col gap-2 rounded-xl border bg-muted/40 p-3 pt-14"
+                  aria-busy="true"
+                >
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+              ) : (
+                <DroppableColumn
+                  key={column.status}
+                  status={column.status}
+                  title={column.title}
+                  count={groups[column.status].length}
+                  accentClassName={column.accent}
+                >
+                  {groups[column.status].map((task) => (
+                    <DraggableTaskCard
+                      key={task.id}
+                      task={task}
+                      onEdit={openEdit}
+                      disabled={updateStatus.isPending}
+                    />
+                  ))}
+                </DroppableColumn>
+              ),
+            )}
+          </div>
+
+          <DragOverlay dropAnimation={null}>
+            {activeTask && (
+              <div className="rotate-2 cursor-grabbing">
+                <TaskCard task={activeTask} onEdit={() => {}} />
               </div>
-            ) : (
-              <Column
-                key={column.status}
-                title={column.title}
-                count={groups[column.status].length}
-                accentClassName={column.accent}
-              >
-                {groups[column.status].map((task) => (
-                  <TaskCard key={task.id} task={task} onEdit={openEdit} />
-                ))}
-              </Column>
-            ),
-          )}
-        </div>
+            )}
+          </DragOverlay>
+        </DndContext>
       )}
 
       <TaskModal

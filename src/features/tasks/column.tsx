@@ -7,6 +7,8 @@ interface ColumnProps {
   title: string;
   count: number;
   accentClassName: string;
+  /** Visual highlight while a drag hovers over this column. */
+  isDropTarget?: boolean;
   children?: ReactNode;
 }
 
@@ -14,11 +16,20 @@ interface ColumnProps {
  * Presentational Kanban column. Rendering of cards is injected via
  * children so this component never needs to know what a task is.
  */
-export function Column({ title, count, accentClassName, children }: ColumnProps) {
+export function Column({
+  title,
+  count,
+  accentClassName,
+  isDropTarget = false,
+  children,
+}: ColumnProps) {
   return (
     <section
       aria-label={title}
-      className="flex min-h-96 flex-col rounded-xl border bg-muted/40"
+      className={cn(
+        "flex min-h-96 flex-1 flex-col rounded-xl border bg-muted/40 transition-colors",
+        isDropTarget && "border-primary/50 bg-primary/5",
+      )}
     >
       <header className="flex items-center gap-2 border-b px-4 py-3">
         <span
