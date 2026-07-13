@@ -30,4 +30,8 @@ export const imageService = {
     );
     return data;
   },
+
+  async deleteImage(id: number): Promise<void> {
+    await apiClient.delete(`/api/images/${id}/`);
+  },
 };
