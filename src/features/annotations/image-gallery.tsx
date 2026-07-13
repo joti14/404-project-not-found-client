@@ -51,6 +51,7 @@ export function ImageGallery({ images, selectedId, onSelect }: ImageGalleryProps
               {/* Plain <img>: media URLs are dynamic cross-origin files
                   served by Django; next/image optimization buys nothing
                   here and would need remote-pattern config. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.image}
                 alt={`Uploaded image ${image.id}`}

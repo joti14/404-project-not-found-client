@@ -1,6 +1,7 @@
-import { KanbanSquare, PenTool } from "lucide-react";
+import { ArrowRight, KanbanSquare, PenTool } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,16 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-gradient-to-b from-background to-muted/60 p-6">
       <div className="text-center">
-        <p className="font-mono text-sm text-muted-foreground">
-          frontend: running
-        </p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight">
+        <h1 className="text-4xl font-bold tracking-tight">
           404 Project Not Found
         </h1>
         <p className="mt-2 text-muted-foreground">
@@ -33,13 +31,14 @@ export default function Home() {
               Tasks
             </CardTitle>
             <CardDescription>
-              Date-based Kanban board with drag and drop.
+              Plan your day on a Kanban board with drag and drop.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" disabled>
-              Coming in a later slice
-            </Button>
+            <Link href="/tasks" className={cn(buttonVariants(), "w-full")}>
+              Open the board
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
           </CardContent>
         </Card>
 
@@ -50,20 +49,27 @@ export default function Home() {
               Annotate
             </CardTitle>
             <CardDescription>
-              Draw and manage polygons on uploaded images.
+              Upload images and draw polygon annotations on them.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" variant="outline" disabled>
-              Coming in a later slice
-            </Button>
+            <Link
+              href="/annotate"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+            >
+              Start annotating
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
           </CardContent>
         </Card>
       </div>
 
-      <div className="w-full max-w-2xl">
-        <Input placeholder="Reusable Input component — wired to forms later" />
-      </div>
+      <p className="text-sm text-muted-foreground">
+        You&apos;ll be asked to log in first —{" "}
+        <Link href="/login" className="underline underline-offset-4">
+          go to login
+        </Link>
+      </p>
     </main>
   );
 }
