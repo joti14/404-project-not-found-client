@@ -2,7 +2,7 @@
 
 A 2-in-1 productivity app: a **date-based Kanban task board** with drag & drop, and a **polygon image-annotation tool** — built as a hiring assessment.
 
-- **Live app:** _<add Vercel URL after deploy>_
+- **Live app:** [404-project-not-found-client.vercel.app](https://404-project-not-found-client.vercel.app/)
 - **Backend repo:** [joti14/404-project-not-found-server](https://github.com/joti14/404-project-not-found-server)
 - **Demo login:** `demo@404notfound.dev` / `Demo404!pass`
 
@@ -54,6 +54,8 @@ Rules that shaped the code:
 5. **`npm run build` poisoned the dev server.** Both `next build` and `next dev` write to `.next/`; running them concurrently corrupted the manifest and every page returned 500. Fixed permanently by giving production builds their own `distDir`.
 6. **The upload race.** Auto-selecting a freshly uploaded image lost to the "keep selection valid" effect, which saw the new image missing from the still-stale list and reset the selection. Fixed by returning the invalidation promise from `onSuccess`, so the mutation only settles after the refetched list is in cache.
 7. **The UTC day-shift trap.** `Date.toISOString()` converts to UTC and changes the calendar day for anyone east of Greenwich after midnight. All date handling goes through local-timezone helpers (`utils/date.ts`).
+8. **Peer dependency roulette on a clean install.** `react-konva@19.2.5` requires `react@^19.2.0`, but the project pinned `19.1.0`. Locally `npm install` glossed over it thanks to an existing lockfile; Vercel's clean-room install re-resolved the whole tree and hit `ERESOLVE`. Fixed by bumping React to `^19.2.0` — the real fix, not `--legacy-peer-deps` papering over it.
+9. **The `distDir` fix that broke Vercel.** The local fix for villain #5 (separate `distDir` for production builds) keyed off `NODE_ENV === "production"` — true on Vercel too, so the build output landed in `.next-build` while Vercel only looks in `.next`, failing with "output directory not found." Fixed by also checking Vercel's own `VERCEL` env var, so the redirect only applies to local builds running alongside a dev server.
 
 (Most were defeated with the power of documentation, browser devtools, and an AI pair-programmer.)
 
