@@ -20,6 +20,27 @@ apiClient.interceptors.request.use((config) => {
 });
 
 /**
+ * Extract per-field messages from a DRF validation error response
+ * ({"field": ["msg", ...]}) so forms can attach them to their inputs.
+ */
+export function getFieldErrors(error: unknown): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+  if (error instanceof AxiosError && error.response?.status === 400) {
+    const data: unknown = error.response.data;
+    if (data && typeof data === "object" && !Array.isArray(data)) {
+      for (const [field, messages] of Object.entries(data)) {
+        if (Array.isArray(messages) && typeof messages[0] === "string") {
+          fieldErrors[field] = messages[0];
+        } else if (typeof messages === "string") {
+          fieldErrors[field] = messages;
+        }
+      }
+    }
+  }
+  return fieldErrors;
+}
+
+/**
  * Extract a human-readable message from a DRF error response.
  * DRF errors come as {"detail": "..."} or {"field": ["msg", ...]}.
  */

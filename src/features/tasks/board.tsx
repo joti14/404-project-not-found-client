@@ -1,7 +1,7 @@
 "use client";
 
-import { CircleAlert, RotateCw } from "lucide-react";
-import { useMemo } from "react";
+import { CircleAlert, Plus, RotateCw } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DateSelector } from "@/components/ui/date-selector";
@@ -12,6 +12,7 @@ import { formatDisplayDate } from "@/utils/date";
 
 import { Column } from "./column";
 import { TaskCard } from "./task-card";
+import { TaskModal } from "./task-modal";
 import { useTasks } from "./use-tasks";
 
 const COLUMNS: ReadonlyArray<{
@@ -35,6 +36,9 @@ export function Board() {
   const selectedDate = useDateStore((state) => state.selectedDate);
   const setSelectedDate = useDateStore((state) => state.setSelectedDate);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
   const { data: tasks, isPending, isError, refetch, isRefetching } =
     useTasks(selectedDate);
 
@@ -51,6 +55,16 @@ export function Board() {
     return grouped;
   }, [tasks]);
 
+  const openCreate = () => {
+    setEditingTask(null);
+    setModalOpen(true);
+  };
+
+  const openEdit = (task: Task) => {
+    setEditingTask(task);
+    setModalOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -61,7 +75,13 @@ export function Board() {
             {tasks && ` · ${tasks.length} task${tasks.length === 1 ? "" : "s"}`}
           </p>
         </div>
-        <DateSelector value={selectedDate} onChange={setSelectedDate} />
+        <div className="flex flex-wrap items-center gap-2">
+          <DateSelector value={selectedDate} onChange={setSelectedDate} />
+          <Button onClick={openCreate}>
+            <Plus className="size-4" aria-hidden />
+            Add Task
+          </Button>
+        </div>
       </div>
 
       {isError ? (
@@ -108,13 +128,20 @@ export function Board() {
                 accentClassName={column.accent}
               >
                 {groups[column.status].map((task) => (
-                  <TaskCard key={task.id} task={task} />
+                  <TaskCard key={task.id} task={task} onEdit={openEdit} />
                 ))}
               </Column>
             ),
           )}
         </div>
       )}
+
+      <TaskModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        task={editingTask}
+        boardDate={selectedDate}
+      />
     </div>
   );
 }
